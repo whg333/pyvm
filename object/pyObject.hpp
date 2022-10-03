@@ -6,7 +6,13 @@
 #define PYVM_PY_OBJECT_HPP
 
 class PyObject{
+public:
+    virtual PyObject* add(PyObject* other){
+        return nullptr;
+    }
+    virtual void print(){
 
+    }
 };
 
 #endif //PYVM_PY_OBJECT_HPP

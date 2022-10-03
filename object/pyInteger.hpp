@@ -15,6 +15,8 @@ public:
     int value(){
         return _value;
     }
+    PyObject * add(PyObject *other) override;
+    void print() override;
 };
 
 
