@@ -1,5 +1,6 @@
 #include <iostream>
 #include "util/bufferedInputStream.hpp"
+#include "code/binaryFileParser.hpp"
 
 int main(int argc, char** argv) {
     std::cout << "Hello, PyVM!" << std::endl;
@@ -8,6 +9,7 @@ int main(int argc, char** argv) {
         return 0;
     }
     BufferedInputStream stream(argv[1]);
-    printf("magic number is 0x%x\n", stream.read_int());
+    BinaryFileParser parser(&stream);
+    CodeObject* code = parser.parse();
     return 0;
 }

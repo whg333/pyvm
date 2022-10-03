@@ -2,7 +2,7 @@
 // Created by whg on 2022/10/3.
 //
 
-#ifndef PYVM_BUFFERED_INPUTS_TREAM_HPP
+#ifndef PYVM_BUFFERED_INPUT_STREAM_HPP
 #define PYVM_BUFFERED_INPUT_STREAM_HPP
 
 #include <stdio.h>
@@ -59,4 +59,4 @@ public:
     }
 };
 
-#endif //PYVM_BUFFERED_INPUTS_TREAM_HPP
+#endif //PYVM_BUFFERED_INPUT_STREAM_HPP
