@@ -9,6 +9,7 @@ add_executable(pyvm main.cpp
         util/arrayList.cpp
         code/binaryFileParser.cpp
         code/codeObject.cpp
-        runtime/interpreter.cpp)
+        runtime/interpreter.cpp
+        runtime/universe.cpp)
 
 INCLUDE_DIRECTORIES(./)

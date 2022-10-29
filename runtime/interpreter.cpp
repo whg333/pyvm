@@ -6,9 +6,13 @@
 #include "interpreter.hpp"
 #include "code/bytecode.hpp"
 #include "object/pyInteger.hpp"
+#include "runtime/universe.hpp"
+
+#define PUSH(x) _stack->add((x))
+#define POP()   _stack->pop()
 
 Interpreter::Interpreter() {
-
+    Universe::genesis();
 }
 
 void Interpreter::run(CodeObject *codeObj) {
@@ -50,6 +54,42 @@ void Interpreter::run(CodeObject *codeObj) {
                 break;
             case ByteCode::RETURN_VALUE:
                 _stack->pop();
+                break;
+
+            case ByteCode::COMPARE_OP:
+                w = POP();
+                v = POP();
+                switch (op_arg) {
+                    case ByteCode::LESS:
+                        PUSH(v->less(w));
+                        break;
+                    case ByteCode::LESS_EQUAL:
+                        PUSH(v->le(w));
+                        break;
+                    case ByteCode::EQUAL:
+                        PUSH(v->equal(w));
+                        break;
+                    case ByteCode::NOT_EQUAL:
+                        PUSH(v->not_equal(w));
+                        break;
+                    case ByteCode::GREATER:
+                        PUSH(v->greater(w));
+                        break;
+                    case ByteCode::GREATER_EQUAL:
+                        PUSH(v->ge(w));
+                        break;
+                }
+                break;
+
+            case ByteCode::POP_JUMP_IF_FALSE:
+                v = POP();
+                // if(((PyInteger*)v)->value() == 0){
+                if(v == Universe::PyFalse){
+                    pc = op_arg;
+                }
+                break;
+            case ByteCode::JUMP_FORWARD:
+                pc += op_arg;
                 break;
             default:
                 printf("Error: Unknown op code %d\n", op_code);
