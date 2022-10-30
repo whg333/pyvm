@@ -22,6 +22,8 @@ public:
     int length(){
         return _length;
     }
+
+    PyObject * equal(PyObject *other) override;
 };
 
 #endif //PYVM_PY_STRING_HPP

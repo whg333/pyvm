@@ -6,6 +6,7 @@
 #define PYVM_INTERPRETER_HPP
 
 #include "code/codeObject.hpp"
+#include "util/map.hpp"
 
 class Interpreter {
 private:

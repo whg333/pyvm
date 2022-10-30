@@ -22,17 +22,20 @@ void Interpreter::run(CodeObject *codeObj) {
     _stack = new ArrayList<PyObject*>(code_length);
     _consts = codeObj->_consts;
 
+    ArrayList<PyObject*>* names = codeObj->_names;
+    Map<PyObject*, PyObject*>* locals = new Map<PyObject*, PyObject*>(); // 局部变量表
+
+    char* bytecodeArr = const_cast<char *>(bytecodes->value());
     while(pc < code_length){
-        unsigned char op_code = bytecodes->value()[pc++];
+        unsigned char op_code = bytecodeArr[pc++];
         bool has_argument = (op_code & 0xFF) >= ByteCode::HAS_ARGUMENT;
 
         int op_arg = -1;
         if(has_argument){
-            int byte1 = bytecodes->value()[pc++] & 0xFF;
-            op_arg = (bytecodes->value()[pc++] & 0xFF) << 8 | byte1;
+            int byte1 = bytecodeArr[pc++] & 0xFF;
+            op_arg = (bytecodeArr[pc++] & 0xFF) << 8 | byte1;
         }
 
-        PyInteger* lhs, * rhs;
         PyObject* v, * w, * u, * attr, * const_val;
 
         switch (op_code) {
@@ -91,6 +94,27 @@ void Interpreter::run(CodeObject *codeObj) {
             case ByteCode::JUMP_FORWARD:
                 pc += op_arg;
                 break;
+
+            case ByteCode::JUMP_ABSOLUTE:
+                pc = op_arg;
+                break;
+
+            case ByteCode::SETUP_LOOP:
+                break;
+            case ByteCode::POP_BLOCK:
+                break;
+
+            case ByteCode::STORE_NAME:
+                v = names->get(op_arg);
+                w = POP();
+                locals->put(v, w);
+                break;
+            case ByteCode::LOAD_NAME:
+                v = names->get(op_arg);
+                w = locals->get(v);
+                PUSH(w);
+                break;
+
             default:
                 printf("Error: Unknown op code %d\n", op_code);
         }

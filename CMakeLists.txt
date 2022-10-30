@@ -7,6 +7,7 @@ add_executable(pyvm main.cpp
         object/pyInteger.cpp
         object/pyString.cpp
         util/arrayList.cpp
+        util/map.cpp
         code/binaryFileParser.cpp
         code/codeObject.cpp
         runtime/interpreter.cpp
