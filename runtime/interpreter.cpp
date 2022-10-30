@@ -10,30 +10,34 @@
 
 #define PUSH(x) _stack->add((x))
 #define POP()   _stack->pop()
+#define STACK_LV() _stack->size()
 
 Interpreter::Interpreter() {
     Universe::genesis();
 }
 
 void Interpreter::run(CodeObject *codeObj) {
-    int pc = 0;
-    PyString* bytecodes = codeObj->_bytecodes;
-    int code_length = bytecodes->length();
-    _stack = new ArrayList<PyObject*>(code_length);
+
+    _stack = new ArrayList<PyObject*>(codeObj->_stack_size);
     _consts = codeObj->_consts;
+
+    _loop_stack = new ArrayList<Block*>();
+    Block* b;
 
     ArrayList<PyObject*>* names = codeObj->_names;
     Map<PyObject*, PyObject*>* locals = new Map<PyObject*, PyObject*>(); // 局部变量表
 
-    char* bytecodeArr = const_cast<char *>(bytecodes->value());
+    int pc = 0;
+    char* code = const_cast<char *>(codeObj->_bytecodes->value());
+    int code_length = codeObj->_bytecodes->length();
     while(pc < code_length){
-        unsigned char op_code = bytecodeArr[pc++];
+        unsigned char op_code = code[pc++];
         bool has_argument = (op_code & 0xFF) >= ByteCode::HAS_ARGUMENT;
 
         int op_arg = -1;
         if(has_argument){
-            int byte1 = bytecodeArr[pc++] & 0xFF;
-            op_arg = (bytecodeArr[pc++] & 0xFF) << 8 | byte1;
+            int byte1 = code[pc++] & 0xFF;
+            op_arg = (code[pc++] & 0xFF) << 8 | byte1;
         }
 
         PyObject* v, * w, * u, * attr, * const_val;
@@ -100,8 +104,22 @@ void Interpreter::run(CodeObject *codeObj) {
                 break;
 
             case ByteCode::SETUP_LOOP:
+                _loop_stack->push(new Block(
+                        op_code, pc + op_arg,
+                        STACK_LV()));
                 break;
             case ByteCode::POP_BLOCK:
+                b = _loop_stack->pop();
+                while (STACK_LV() > b->_level){
+                    POP();
+                }
+                break;
+            case ByteCode::BREAK_LOOP:
+                b = _loop_stack->pop();
+                while (STACK_LV() < b->_level){
+                    POP();
+                }
+                pc = b->_target;
                 break;
 
             case ByteCode::STORE_NAME:

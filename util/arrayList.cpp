@@ -3,6 +3,7 @@
 //
 
 #include "arrayList.hpp"
+#include "runtime/interpreter.hpp"
 #include <stdio.h>
 
 template <typename T>
@@ -82,3 +83,6 @@ template class ArrayList<PyObject*>;
 
 class PyString;
 template class ArrayList<PyString*>;
+
+class Block;
+template class ArrayList<Block*>;
