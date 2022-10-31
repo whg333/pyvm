@@ -69,11 +69,6 @@ int ArrayList<T>::length() {
 }
 
 template<typename T>
-void ArrayList<T>::push(T t) {
-    add(t);
-}
-
-template<typename T>
 T ArrayList<T>::pop() {
     return _array[--_size];
 }

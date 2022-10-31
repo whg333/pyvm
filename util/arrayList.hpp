@@ -24,7 +24,6 @@ public:
     int size();
     int length();
 
-    void push(T t);
     T pop();
 };
 

@@ -8,65 +8,56 @@
 #include "object/pyInteger.hpp"
 #include "runtime/universe.hpp"
 
-#define PUSH(x) _stack->add((x))
-#define POP()   _stack->pop()
-#define STACK_LV() _stack->size()
+#define PUSH(x) _frame->stack()->add((x))
+#define POP()   _frame->stack()->pop()
+#define STACK_LV() _frame->stack()->size()
+
+#define GET_CONST(x) _frame->consts()->get((x))
+
+#define PUSH_LOOP(x) _frame->loopStack()->add((x))
+#define POP_LOOP() _frame->loopStack()->pop()
 
 Interpreter::Interpreter() {
     Universe::genesis();
 }
 
 void Interpreter::run(CodeObject *codeObj) {
-
-    _stack = new ArrayList<PyObject*>(codeObj->_stack_size);
-    _consts = codeObj->_consts;
-
-    _loop_stack = new ArrayList<Block*>();
     Block* b;
+    PyObject* v, * w, * u, * attr, * const_val;
 
-    ArrayList<PyObject*>* names = codeObj->_names;
-    Map<PyObject*, PyObject*>* locals = new Map<PyObject*, PyObject*>(); // 局部变量表
-
-    int pc = 0;
-    char* code = const_cast<char *>(codeObj->_bytecodes->value());
-    int code_length = codeObj->_bytecodes->length();
-    while(pc < code_length){
-        unsigned char op_code = code[pc++];
-        bool has_argument = (op_code & 0xFF) >= ByteCode::HAS_ARGUMENT;
-
-        int op_arg = -1;
-        if(has_argument){
-            int byte1 = code[pc++] & 0xFF;
-            op_arg = (code[pc++] & 0xFF) << 8 | byte1;
+    _frame = new FrameObject(codeObj);
+    while(_frame->hasMoreCodes()){
+        unsigned char opCode = _frame->getOpCode();
+        int opArg = -1;
+        if(_frame->hasOpArg(opCode)){
+            opArg = _frame->getOpArg();
         }
 
-        PyObject* v, * w, * u, * attr, * const_val;
-
-        switch (op_code) {
+        switch (opCode) {
             case ByteCode::LOAD_CONST:
-                const_val = _consts->get(op_arg);
-                _stack->push(const_val);
+                const_val = GET_CONST(opArg);
+                PUSH(const_val);
                 break;
             case ByteCode::PRINT_ITEM:
-                v = _stack->pop();
+                v = POP();
                 v->print();
                 break;
             case ByteCode::PRINT_NEWLINE:
                 printf("\n");
                 break;
             case ByteCode::BINARY_ADD:
-                v = _stack->pop();
-                w = _stack->pop();
-                _stack->push(w->add(v));
+                v = POP();
+                w = POP();
+                PUSH(w->add(v));
                 break;
             case ByteCode::RETURN_VALUE:
-                _stack->pop();
+                POP();
                 break;
 
             case ByteCode::COMPARE_OP:
                 w = POP();
                 v = POP();
-                switch (op_arg) {
+                switch (opArg) {
                     case ByteCode::LESS:
                         PUSH(v->less(w));
                         break;
@@ -92,48 +83,48 @@ void Interpreter::run(CodeObject *codeObj) {
                 v = POP();
                 // if(((PyInteger*)v)->value() == 0){
                 if(v == Universe::PyFalse){
-                    pc = op_arg;
+                    _frame->setPc(opArg);
                 }
                 break;
             case ByteCode::JUMP_FORWARD:
-                pc += op_arg;
+                _frame->setPc( _frame->pc() + opArg);
                 break;
             case ByteCode::JUMP_ABSOLUTE:
-                pc = op_arg;
+                _frame->setPc(opArg);
                 break;
 
             case ByteCode::SETUP_LOOP:
-                _loop_stack->push(new Block(
-                        op_code, pc + op_arg,
+                PUSH_LOOP(new Block(
+                        opCode,  _frame->pc() + opArg,
                         STACK_LV()));
                 break;
             case ByteCode::POP_BLOCK:
-                b = _loop_stack->pop();
+                b = POP_LOOP();
                 while (STACK_LV() > b->_level){
                     POP();
                 }
                 break;
             case ByteCode::BREAK_LOOP:
-                b = _loop_stack->pop();
+                b = POP_LOOP();
                 while (STACK_LV() < b->_level){
                     POP();
                 }
-                pc = b->_target;
+                _frame->setPc(b->_target);
                 break;
 
             case ByteCode::STORE_NAME:
-                v = names->get(op_arg);
+                v = _frame->names()->get(opArg);
                 w = POP();
-                locals->put(v, w);
+                _frame->locals()->put(v, w);
                 break;
             case ByteCode::LOAD_NAME:
-                v = names->get(op_arg);
-                w = locals->get(v);
+                v = _frame->names()->get(opArg);
+                w = _frame->locals()->get(v);
                 PUSH(w);
                 break;
 
             default:
-                printf("Error: Unknown op code %d\n", op_code);
+                printf("Error: Unknown op code %d\n", opCode);
         }
     }
 }
