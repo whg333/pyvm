@@ -8,6 +8,7 @@
 
 #include "code/codeObject.hpp"
 #include "util/map.hpp"
+#include "object/functionObject.hpp"
 
 class Block{
 public:
@@ -36,6 +37,7 @@ public:
 class FrameObject {
 public:
     FrameObject(CodeObject* codes);
+    FrameObject(FunctionObject* func);
     ~FrameObject();
 
     CodeObject* _codes;
@@ -47,6 +49,8 @@ public:
     ArrayList<PyObject*>* _consts;
     ArrayList<PyObject*>* _names;
     Map<PyObject*, PyObject*>* _locals;
+
+    FrameObject* _next;
 
 public:
     void setPc(int pc){
@@ -69,6 +73,15 @@ public:
     }
     Map<PyObject*, PyObject*>* locals(){
         return _locals;
+    }
+    void setNext(FrameObject* next){
+        _next = next;
+    }
+    FrameObject* next(){
+        return _next;
+    }
+    bool isTop(){
+        return _next == nullptr;
     }
 
     bool hasMoreCodes();

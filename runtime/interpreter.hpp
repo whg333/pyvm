@@ -11,9 +11,15 @@
 class Interpreter {
 private:
     FrameObject* _frame;
+    PyObject* _retVal;
 public:
     Interpreter();
     void run(CodeObject* codeObj);
+private:
+    void runFrame();
+    void destroyFrame();
+    void leaveFrame();
+    void callFunc(PyObject* callable);
 };
 
 

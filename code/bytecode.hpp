@@ -38,6 +38,9 @@ public:
     static const unsigned char POP_JUMP_IF_FALSE = 114;
 
     static const unsigned char SETUP_LOOP = 120;
+
+    static const unsigned char CALL_FUNCTION = 131;
+    static const unsigned char MAKE_FUNCTION = 132;
 };
 
 #endif //PYVM_BYTECODE_HPP

@@ -8,13 +8,13 @@
 
 #define COMPARE(x) x ? Universe::PyTrue : Universe::PyFalse
 
-IntegerClass* IntegerClass::instance = NULL;
+IntegerClass* IntegerClass::instance = nullptr;
 IntegerClass::IntegerClass() {
 
 }
 IntegerClass* IntegerClass::getInst() {
     //TODO 考虑并发使用双检查？
-    if(instance == NULL){
+    if(instance == nullptr){
         instance = new IntegerClass();
     }
     return instance;

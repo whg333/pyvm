@@ -8,12 +8,32 @@ FrameObject::FrameObject(CodeObject *codes) {
     _codes = codes;
     _pc = 0;
 
-    _stack = new ArrayList<PyObject*>(codes->_stack_size);
+    _stack = new ArrayList<PyObject*>(_codes->_stack_size);
     _loopStack = new ArrayList<Block*>();
 
-    _consts = codes->_consts;
-    _names = codes->_names;
+    _consts = _codes->_consts;
+    _names = _codes->_names;
     _locals = new Map<PyObject*, PyObject*>();
+
+    _next = nullptr;
+}
+
+FrameObject::FrameObject(FunctionObject *func) {
+    _codes = func->code();
+    _pc = 0;
+
+    _stack = new ArrayList<PyObject*>(_codes->_stack_size);
+    _loopStack = new ArrayList<Block*>();
+
+    _consts = _codes->_consts;
+    _names = _codes->_names;
+    _locals = new Map<PyObject*, PyObject*>();
+
+    _next = nullptr;
+}
+
+FrameObject::~FrameObject() {
+
 }
 
 bool FrameObject::hasMoreCodes() {

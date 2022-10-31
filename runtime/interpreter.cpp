@@ -7,6 +7,7 @@
 #include "code/bytecode.hpp"
 #include "object/pyInteger.hpp"
 #include "runtime/universe.hpp"
+#include "object/functionObject.hpp"
 
 #define PUSH(x) _frame->stack()->add((x))
 #define POP()   _frame->stack()->pop()
@@ -22,10 +23,15 @@ Interpreter::Interpreter() {
 }
 
 void Interpreter::run(CodeObject *codeObj) {
+    _frame = new FrameObject(codeObj);
+    runFrame();
+    destroyFrame();
+}
+
+void Interpreter::runFrame() {
     Block* b;
     PyObject* v, * w, * u, * attr, * const_val;
-
-    _frame = new FrameObject(codeObj);
+    FunctionObject* fo;
     while(_frame->hasMoreCodes()){
         unsigned char opCode = _frame->getOpCode();
         bool hasArg = (opCode & 0xFF) >= ByteCode::HAS_ARGUMENT;
@@ -52,7 +58,11 @@ void Interpreter::run(CodeObject *codeObj) {
                 PUSH(w->add(v));
                 break;
             case ByteCode::RETURN_VALUE:
-                POP();
+                _retVal = POP();
+                if(_frame->isTop()){
+                    return;
+                }
+                leaveFrame();
                 break;
 
             case ByteCode::COMPARE_OP:
@@ -124,8 +134,35 @@ void Interpreter::run(CodeObject *codeObj) {
                 PUSH(w);
                 break;
 
+            case ByteCode::MAKE_FUNCTION:
+                v = POP();
+                fo = new FunctionObject(v);
+                PUSH(fo);
+                break;
+            case ByteCode::CALL_FUNCTION:
+                v = POP();
+                callFunc(v);
+                break;
+
             default:
                 printf("Error: Unknown op code %d\n", opCode);
         }
     }
+}
+
+void Interpreter::callFunc(PyObject* callable){
+    FrameObject* funcFrame = new FrameObject((FunctionObject*) callable);
+    funcFrame->setNext(_frame);
+    _frame = funcFrame;
+}
+
+void Interpreter::leaveFrame() {
+    destroyFrame();
+    PUSH(_retVal);
+}
+
+void Interpreter::destroyFrame() {
+    FrameObject* temp = _frame;
+    _frame = _frame->next();
+    delete temp;
 }
