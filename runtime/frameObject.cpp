@@ -3,7 +3,6 @@
 //
 
 #include "frameObject.hpp"
-#include "code/bytecode.hpp"
 
 FrameObject::FrameObject(CodeObject *codes) {
     _codes = codes;
@@ -25,12 +24,8 @@ unsigned char FrameObject::getOpCode() {
     return _codes->_bytecodes->value()[_pc++];
 }
 
-bool FrameObject::hasOpArg(unsigned char opCode) {
-    return (opCode & 0xFF) >= ByteCode::HAS_ARGUMENT;
-}
-
 int FrameObject::getOpArg() {
-    int byte1 = _codes->_bytecodes->value()[_pc++] * 0xFF;
-    int byte2 = _codes->_bytecodes->value()[_pc++] * 0xFF;
+    int byte1 = _codes->_bytecodes->value()[_pc++] & 0xFF;
+    int byte2 = _codes->_bytecodes->value()[_pc++] & 0xFF;
     return byte2 << 8 | byte1;
 }

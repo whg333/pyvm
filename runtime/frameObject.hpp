@@ -73,7 +73,6 @@ public:
 
     bool hasMoreCodes();
     unsigned char getOpCode();
-    bool hasOpArg(unsigned char);
     int getOpArg();
 };
 

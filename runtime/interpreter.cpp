@@ -28,8 +28,9 @@ void Interpreter::run(CodeObject *codeObj) {
     _frame = new FrameObject(codeObj);
     while(_frame->hasMoreCodes()){
         unsigned char opCode = _frame->getOpCode();
+        bool hasArg = (opCode & 0xFF) >= ByteCode::HAS_ARGUMENT;
         int opArg = -1;
-        if(_frame->hasOpArg(opCode)){
+        if(hasArg){
             opArg = _frame->getOpArg();
         }
 
