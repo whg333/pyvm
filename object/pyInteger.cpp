@@ -8,45 +8,96 @@
 
 #define COMPARE(x) x ? Universe::PyTrue : Universe::PyFalse
 
+IntegerClass* IntegerClass::instance = NULL;
+IntegerClass::IntegerClass() {
+
+}
+IntegerClass* IntegerClass::getInst() {
+    //TODO 考虑并发使用双检查？
+    if(instance == NULL){
+        instance = new IntegerClass();
+    }
+    return instance;
+}
+
 PyInteger::PyInteger(int i) {
     _value = i;
+    setClass(IntegerClass::getInst());
 }
 
-PyObject* PyInteger::add(PyObject* other) {
+void IntegerClass::print(PyObject *self) {
+    PyInteger* selfInt = (PyInteger*)self;
+    assert(selfInt && (selfInt->getClass() == (Klass*)this));
+    printf("%d", selfInt->value());
+}
+
+PyObject* IntegerClass::add(PyObject *self, PyObject* other) {
+    assert(self->getClass() == other->getClass());
+    PyInteger* selfInt = (PyInteger*)self;
     PyInteger* otherInt = (PyInteger*)other;
-    return new PyInteger(_value + otherInt->_value);
+    assert(selfInt && (selfInt->getClass() == (Klass*)this));
+    assert(otherInt && (otherInt->getClass() == (Klass*)this));
+
+    return new PyInteger(selfInt->value() + otherInt->value());
 }
 
-void PyInteger::print() {
-    printf("%d", _value);
-}
-
-PyObject *PyInteger::less(PyObject *other) {
+PyObject *IntegerClass::less(PyObject *self, PyObject *other) {
+    assert(self->getClass() == other->getClass());
+    PyInteger* selfInt = (PyInteger*)self;
     PyInteger* otherInt = (PyInteger*)other;
-    return COMPARE(_value < otherInt->_value);
+    assert(selfInt && (selfInt->getClass() == (Klass*)this));
+    assert(otherInt && (otherInt->getClass() == (Klass*)this));
+
+    return COMPARE(selfInt->value() < otherInt->value());
 }
 
-PyObject *PyInteger::le(PyObject *other) {
+PyObject *IntegerClass::le(PyObject *self, PyObject *other) {
+    assert(self->getClass() == other->getClass());
+    PyInteger* selfInt = (PyInteger*)self;
     PyInteger* otherInt = (PyInteger*)other;
-    return COMPARE(_value <= otherInt->_value);
+    assert(selfInt && (selfInt->getClass() == (Klass*)this));
+    assert(otherInt && (otherInt->getClass() == (Klass*)this));
+
+    return COMPARE(selfInt->value() <= otherInt->value());
 }
 
-PyObject *PyInteger::equal(PyObject *other) {
+PyObject *IntegerClass::equal(PyObject *self, PyObject *other) {
+    if(self->getClass() != other->getClass()){
+        return Universe::PyFalse;
+    }
+    PyInteger* selfInt = (PyInteger*)self;
     PyInteger* otherInt = (PyInteger*)other;
-    return COMPARE(_value == otherInt->_value);
+    assert(selfInt && (selfInt->getClass() == (Klass*)this));
+    assert(otherInt && (otherInt->getClass() == (Klass*)this));
+    return COMPARE(selfInt->value() == otherInt->value());
 }
 
-PyObject *PyInteger::not_equal(PyObject *other) {
+PyObject *IntegerClass::not_equal(PyObject *self, PyObject *other) {
+    assert(self->getClass() == other->getClass());
+    PyInteger* selfInt = (PyInteger*)self;
     PyInteger* otherInt = (PyInteger*)other;
-    return COMPARE(_value != otherInt->_value);
+    assert(selfInt && (selfInt->getClass() == (Klass*)this));
+    assert(otherInt && (otherInt->getClass() == (Klass*)this));
+
+    return COMPARE(selfInt->value() != otherInt->value());
 }
 
-PyObject *PyInteger::greater(PyObject *other) {
+PyObject *IntegerClass::greater(PyObject *self, PyObject *other) {
+    assert(self->getClass() == other->getClass());
+    PyInteger* selfInt = (PyInteger*)self;
     PyInteger* otherInt = (PyInteger*)other;
-    return COMPARE(_value > otherInt->_value);
+    assert(selfInt && (selfInt->getClass() == (Klass*)this));
+    assert(otherInt && (otherInt->getClass() == (Klass*)this));
+
+    return COMPARE(selfInt->value() > otherInt->value());
 }
 
-PyObject *PyInteger::ge(PyObject *other) {
+PyObject *IntegerClass::ge(PyObject *self, PyObject *other) {
+    assert(self->getClass() == other->getClass());
+    PyInteger* selfInt = (PyInteger*)self;
     PyInteger* otherInt = (PyInteger*)other;
-    return COMPARE(_value >= otherInt->_value);
+    assert(selfInt && (selfInt->getClass() == (Klass*)this));
+    assert(otherInt && (otherInt->getClass() == (Klass*)this));
+
+    return COMPARE(selfInt->value() >= otherInt->value());
 }

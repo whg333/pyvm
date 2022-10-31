@@ -98,7 +98,6 @@ void Interpreter::run(CodeObject *codeObj) {
             case ByteCode::JUMP_FORWARD:
                 pc += op_arg;
                 break;
-
             case ByteCode::JUMP_ABSOLUTE:
                 pc = op_arg;
                 break;

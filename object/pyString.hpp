@@ -7,6 +7,18 @@
 
 #include "pyObject.hpp"
 
+class StringClass:public Klass{
+private:
+    StringClass(){
+
+    }
+    static StringClass* instance;
+public:
+    static StringClass* getInst();
+    void print(PyObject *self) override;
+    PyObject * equal(PyObject *self, PyObject *other) override;
+};
+
 class PyString:public PyObject{
 private:
     char* _value;
@@ -22,8 +34,6 @@ public:
     int length(){
         return _length;
     }
-
-    PyObject * equal(PyObject *other) override;
 };
 
 #endif //PYVM_PY_STRING_HPP

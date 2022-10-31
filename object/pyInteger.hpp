@@ -7,6 +7,24 @@
 
 #include "pyObject.hpp"
 
+class IntegerClass:public Klass{
+private:
+    IntegerClass();
+    static IntegerClass* instance;
+public:
+    static IntegerClass* getInst();
+
+    void print(PyObject* self) override;
+    PyObject * add(PyObject* self, PyObject *other) override;
+
+    PyObject * less(PyObject* self, PyObject *other) override;
+    PyObject * le(PyObject* self, PyObject *other) override;
+    PyObject * equal(PyObject* self, PyObject *other) override;
+    PyObject * not_equal(PyObject* self, PyObject *other) override;
+    PyObject * greater(PyObject* self, PyObject *other) override;
+    PyObject * ge(PyObject* self, PyObject *other) override;
+};
+
 class PyInteger:public PyObject {
 private:
     int _value;
@@ -15,15 +33,6 @@ public:
     int value(){
         return _value;
     }
-    PyObject * add(PyObject *other) override;
-    void print() override;
-
-    PyObject * less(PyObject *other) override;
-    PyObject * le(PyObject *other) override;
-    PyObject * equal(PyObject *other) override;
-    PyObject * not_equal(PyObject *other) override;
-    PyObject * greater(PyObject *other) override;
-    PyObject * ge(PyObject *other) override;
 };
 
 

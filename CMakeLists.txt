@@ -4,6 +4,7 @@ project(pyvm)
 set(CMAKE_CXX_STANDARD 11)
 
 add_executable(pyvm main.cpp
+        object/pyObject.cpp
         object/pyInteger.cpp
         object/pyString.cpp
         util/arrayList.cpp

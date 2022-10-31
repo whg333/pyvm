@@ -6,7 +6,7 @@
 #include "object/pyInteger.hpp"
 
 int main(int argc, char** argv) {
-    std::cout << "Hello, PyVM!" << std::endl;
+    std::cout << "测试Hello, PyVM!" << std::endl;
     if(argc <= 1){
         printf("PyVM need a parameter[filename]\n");
         return 0;

@@ -5,33 +5,35 @@
 #ifndef PYVM_PY_OBJECT_HPP
 #define PYVM_PY_OBJECT_HPP
 
+#include <assert.h>
+#include <stdio.h>
+#include "klass.hpp"
+
 class PyObject{
+private:
+    Klass* _class = nullptr;
 public:
-    virtual PyObject* add(PyObject* other){
-        return nullptr;
+    Klass* getClass(){
+        // assert(_class != nullptr);
+        if(_class == nullptr){
+            printf("Not Set Class!!!");
+        }
+        return _class;
     }
-    virtual void print(){
+    void setClass(Klass* c){
+        _class = c;
+    }
 
-    }
+    void print();
+    
+    PyObject* add(PyObject* other);
 
-    virtual PyObject* less(PyObject* other){
-        return nullptr;
-    }
-    virtual PyObject* le(PyObject* other){
-        return nullptr;
-    }
-    virtual PyObject* equal(PyObject* other){
-        return nullptr;
-    }
-    virtual PyObject* not_equal(PyObject* other){
-        return nullptr;
-    }
-    virtual PyObject* greater(PyObject* other){
-        return nullptr;
-    }
-    virtual PyObject* ge(PyObject* other){
-        return nullptr;
-    }
+    PyObject* less(PyObject* other);
+    PyObject* le(PyObject* other);
+    PyObject* equal(PyObject* other);
+    PyObject* not_equal(PyObject* other);
+    PyObject* greater(PyObject* other);
+    PyObject* ge(PyObject* other);
 };
 
 #endif //PYVM_PY_OBJECT_HPP
