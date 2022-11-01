@@ -46,6 +46,8 @@ public:
     static const unsigned char LOAD_GLOBAL = 116;
 
     static const unsigned char SETUP_LOOP = 120;
+    static const unsigned char LOAD_FAST  = 124;
+    static const unsigned char STORE_FAST  = 125;
 
     static const unsigned char CALL_FUNCTION = 131;
     static const unsigned char MAKE_FUNCTION = 132;

@@ -34,7 +34,8 @@ void Interpreter::run(CodeObject *codeObj) {
 
 void Interpreter::runFrame() {
     Block* b;
-    PyObject* v, * w, * u, * attr, * const_val;
+    PyObject* v, * w;
+    ObjList args = nullptr;
     FunctionObject* fo;
     while(_frame->hasMoreCodes()){
         unsigned char opCode = _frame->getOpCode();
@@ -141,8 +142,8 @@ void Interpreter::runFrame() {
                 break;
 
             case ByteCode::LOAD_CONST:
-                const_val = GET_CONST(opArg);
-                PUSH(const_val);
+                v = GET_CONST(opArg);
+                PUSH(v);
                 break;
             case ByteCode::STORE_NAME:
                 v = _frame->names()->get(opArg);
@@ -159,6 +160,15 @@ void Interpreter::runFrame() {
                     }
                 }
                 PUSH(w);
+                break;
+
+            case ByteCode::LOAD_FAST:
+                v = _frame->fastLocals()->get(opArg);
+                PUSH(v);
+                break;
+            case ByteCode::STORE_FAST:
+                v = POP();
+                _frame->fastLocals()->set(opArg, v);
                 break;
 
             case ByteCode::STORE_GLOBAL:
@@ -179,8 +189,20 @@ void Interpreter::runFrame() {
                 PUSH(fo);
                 break;
             case ByteCode::CALL_FUNCTION:
+                if(opArg > 0){
+                    args = new ArrayList<PyObject*>(opArg);
+                    while(opArg--){
+                        args->set(opArg, POP());
+                    }
+                }
+
                 v = POP();
-                callFunc(v);
+                callFunc(v, args);
+
+                if(args != nullptr){
+                    delete args;
+                    args = nullptr;
+                }
                 break;
 
             default:
@@ -189,8 +211,8 @@ void Interpreter::runFrame() {
     }
 }
 
-void Interpreter::callFunc(PyObject* callable){
-    FrameObject* funcFrame = new FrameObject((FunctionObject*) callable);
+void Interpreter::callFunc(PyObject* callable, ObjList args){
+    FrameObject* funcFrame = new FrameObject((FunctionObject*) callable, args);
     funcFrame->setNext(_frame);
     _frame = funcFrame;
 }

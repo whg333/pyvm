@@ -27,5 +27,7 @@ public:
     T pop();
 };
 
+class PyObject;
+typedef ArrayList<PyObject*>* ObjList;
 
 #endif //PYVM_ARRAY_LIST_HPP

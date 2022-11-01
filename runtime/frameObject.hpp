@@ -37,7 +37,7 @@ public:
 class FrameObject {
 public:
     FrameObject(CodeObject* codes); // 模块调用时使用
-    FrameObject(FunctionObject* func); // 函数调用时使用
+    FrameObject(FunctionObject* func, ObjList args); // 函数调用时使用
     ~FrameObject();
 
     CodeObject* _codes;
@@ -50,6 +50,7 @@ public:
     ArrayList<PyObject*>* _names;
     Map<PyObject*, PyObject*>* _locals; // 局部变量表
     Map<PyObject*, PyObject*>* _globals; // 全局变量表
+    ObjList _fastLocals; // 函数调用参数列表
 
     FrameObject* _next;
 
@@ -77,6 +78,9 @@ public:
     }
     Map<PyObject*, PyObject*>* globals(){
         return _globals;
+    }
+    ObjList fastLocals(){
+        return _fastLocals;
     }
 
     void setNext(FrameObject* next){

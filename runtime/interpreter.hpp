@@ -20,7 +20,7 @@ private:
     void runFrame();
     void destroyFrame();
     void leaveFrame();
-    void callFunc(PyObject* callable);
+    void callFunc(PyObject* callable, ObjList args);
 };
 
 
