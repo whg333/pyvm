@@ -186,6 +186,19 @@ void Interpreter::runFrame() {
                 v = POP(); // 一般前面会有LOAD_CONST把函数代码推上栈顶
                 fo = new FunctionObject(v);
                 fo->setGlobals(_frame->globals());
+
+                if(opArg > 0){
+                    args = new ArrayList<PyObject*>(opArg);
+                    while(opArg--){
+                        args->set(opArg, POP());
+                    }
+                }
+                fo->setDefaults(args);
+                if(args != nullptr){
+                    delete args;
+                    args = nullptr;
+                }
+
                 PUSH(fo);
                 break;
             case ByteCode::CALL_FUNCTION:

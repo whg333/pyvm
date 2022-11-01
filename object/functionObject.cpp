@@ -30,3 +30,15 @@ FunctionObject::FunctionObject(PyObject* codeObj) {
     _flags = code->_flag;
     setClass(FunctionClass::getInst());
 }
+
+void FunctionObject::setDefaults(ObjList defaults) {
+    if(defaults == nullptr){
+        _defaults = nullptr;
+        return;
+    }
+
+    _defaults = new ArrayList<PyObject*>(defaults->length());
+    for(int i=0;i<defaults->length();i++){
+        _defaults->set(i, defaults->get(i));
+    }
+}

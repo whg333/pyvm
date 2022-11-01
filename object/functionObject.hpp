@@ -24,6 +24,7 @@ private:
     PyString* _name;
     unsigned int _flags;
     Map<PyObject*, PyObject*>* _globals;
+    ObjList _defaults; // 函数调用参数默认值
 public:
     FunctionObject(PyObject* code);
     FunctionObject(Klass* klass){
@@ -49,6 +50,11 @@ public:
     void setGlobals(Map<PyObject*, PyObject*>* globals){
         _globals = globals;
     }
+
+    ObjList defaults(){
+        return _defaults;
+    }
+    void setDefaults(ObjList defaults);
 };
 
 

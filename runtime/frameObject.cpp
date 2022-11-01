@@ -7,6 +7,7 @@
 FrameObject::FrameObject(CodeObject *codes) {
     _codes = codes;
     _pc = 0;
+    _next = nullptr;
 
     _stack = new ArrayList<PyObject*>(_codes->_stack_size);
     _loopStack = new ArrayList<Block*>();
@@ -17,12 +18,13 @@ FrameObject::FrameObject(CodeObject *codes) {
     _locals = new Map<PyObject*, PyObject*>();
     _globals = _locals;
 
-    _next = nullptr;
+    _fastLocals = nullptr;
 }
 
 FrameObject::FrameObject(FunctionObject *func, ObjList args) {
     _codes = func->code();
     _pc = 0;
+    _next = nullptr;
 
     _stack = new ArrayList<PyObject*>(_codes->_stack_size);
     _loopStack = new ArrayList<Block*>();
@@ -32,12 +34,16 @@ FrameObject::FrameObject(FunctionObject *func, ObjList args) {
 
     _locals = new Map<PyObject*, PyObject*>();
     _globals = func->globals();
-    _fastLocals = nullptr;
 
-    _next = nullptr;
-
+    int argCnt = _codes->_arg_count;
+    _fastLocals = new ArrayList<PyObject*>(argCnt);
+    if(func->defaults()){
+        int dftCnt = func->defaults()->length();
+        while(dftCnt--){
+            _fastLocals->set(--argCnt, func->defaults()->get(dftCnt));
+        }
+    }
     if(args){
-        _fastLocals = new ArrayList<PyObject*>(args->length());
         for(int i=0;i<args->length();i++){
             _fastLocals->set(i, args->get(i));
         }

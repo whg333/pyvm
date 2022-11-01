@@ -42,6 +42,7 @@ public:
 
     CodeObject* _codes;
     int _pc;
+    FrameObject* _next;
 
     ArrayList<PyObject*>* _stack; // 操作数栈
     ArrayList<Block*>* _loopStack;
@@ -50,9 +51,8 @@ public:
     ArrayList<PyObject*>* _names;
     Map<PyObject*, PyObject*>* _locals; // 局部变量表
     Map<PyObject*, PyObject*>* _globals; // 全局变量表
-    ObjList _fastLocals; // 函数调用参数列表
 
-    FrameObject* _next;
+    ObjList _fastLocals; // 函数调用参数列表
 
 public:
     void setPc(int pc){
