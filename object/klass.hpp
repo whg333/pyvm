@@ -7,6 +7,7 @@
 
 class PyObject; // TODO 这里声明（还是定义）PyObject之后再链接？
 class PyString; // TODO 必须在这里声明，而不能include进来，导致循环依赖？
+// #include "object/pyString.hpp"
 
 class Klass{
 private:
@@ -17,7 +18,7 @@ public:
 
     }
 
-    void setName(PyString name);
+    void setName(PyString* name);
     PyString* name();
 
     virtual void print(PyObject* self){

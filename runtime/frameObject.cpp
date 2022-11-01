@@ -13,7 +13,9 @@ FrameObject::FrameObject(CodeObject *codes) {
 
     _consts = _codes->_consts;
     _names = _codes->_names;
+
     _locals = new Map<PyObject*, PyObject*>();
+    _globals = _locals;
 
     _next = nullptr;
 }
@@ -27,7 +29,9 @@ FrameObject::FrameObject(FunctionObject *func) {
 
     _consts = _codes->_consts;
     _names = _codes->_names;
+
     _locals = new Map<PyObject*, PyObject*>();
+    _globals = func->globals();
 
     _next = nullptr;
 }

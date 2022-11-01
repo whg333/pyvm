@@ -10,8 +10,9 @@
 
 class Interpreter {
 private:
-    FrameObject* _frame;
-    PyObject* _retVal;
+    FrameObject* _frame; // 当前执行帧，即栈顶top的帧
+    PyObject* _retVal; // 函数调用返回值
+    Map<PyObject*, PyObject*>* _builtins; // 内建变量表
 public:
     Interpreter();
     void run(CodeObject* codeObj);

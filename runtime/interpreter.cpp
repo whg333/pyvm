@@ -20,6 +20,10 @@
 
 Interpreter::Interpreter() {
     Universe::genesis();
+    _builtins = new Map<PyObject*, PyObject*>();
+    _builtins->put(new PyString("True"), Universe::PyTrue);
+    _builtins->put(new PyString("False"), Universe::PyFalse);
+    _builtins->put(new PyString("None"), Universe::PyNone);
 }
 
 void Interpreter::run(CodeObject *codeObj) {
@@ -41,9 +45,8 @@ void Interpreter::runFrame() {
         }
 
         switch (opCode) {
-            case ByteCode::LOAD_CONST:
-                const_val = GET_CONST(opArg);
-                PUSH(const_val);
+            case ByteCode::POP_TOP:
+                POP();
                 break;
             case ByteCode::PRINT_ITEM:
                 v = POP();
@@ -87,12 +90,26 @@ void Interpreter::runFrame() {
                     case ByteCode::GREATER_EQUAL:
                         PUSH(v->ge(w));
                         break;
+
+                    case ByteCode::IS:
+                        if(v == w){
+                            PUSH(Universe::PyTrue);
+                        }else{
+                            PUSH(Universe::PyFalse);
+                        }
+                        break;
+                    case ByteCode::IS_NOT:
+                        if(v == w){
+                            PUSH(Universe::PyFalse);
+                        }else{
+                            PUSH(Universe::PyTrue);
+                        }
+                        break;
                 }
                 break;
 
             case ByteCode::POP_JUMP_IF_FALSE:
                 v = POP();
-                // if(((PyInteger*)v)->value() == 0){
                 if(v == Universe::PyFalse){
                     _frame->setPc(opArg);
                 }
@@ -123,6 +140,10 @@ void Interpreter::runFrame() {
                 _frame->setPc(b->_target);
                 break;
 
+            case ByteCode::LOAD_CONST:
+                const_val = GET_CONST(opArg);
+                PUSH(const_val);
+                break;
             case ByteCode::STORE_NAME:
                 v = _frame->names()->get(opArg);
                 w = POP();
@@ -131,12 +152,30 @@ void Interpreter::runFrame() {
             case ByteCode::LOAD_NAME:
                 v = _frame->names()->get(opArg);
                 w = _frame->locals()->get(v);
+                if(w == Universe::PyNone){
+                    w = _frame->globals()->get(v);
+                    if(w == Universe::PyNone){
+                        w = _builtins->get(v);
+                    }
+                }
+                PUSH(w);
+                break;
+
+            case ByteCode::STORE_GLOBAL:
+                v = _frame->names()->get(opArg);
+                w = POP();
+                _frame->globals()->put(v, w);
+                break;
+            case ByteCode::LOAD_GLOBAL:
+                v = _frame->names()->get(opArg);
+                w = _frame->globals()->get(v);
                 PUSH(w);
                 break;
 
             case ByteCode::MAKE_FUNCTION:
-                v = POP();
+                v = POP(); // 一般前面会有LOAD_CONST把函数代码推上栈顶
                 fo = new FunctionObject(v);
+                fo->setGlobals(_frame->globals());
                 PUSH(fo);
                 break;
             case ByteCode::CALL_FUNCTION:

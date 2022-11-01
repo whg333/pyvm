@@ -6,11 +6,12 @@
 #define PYVM_UNIVERSE_HPP
 
 #include "object/pyInteger.hpp"
+#include "object/pyString.hpp"
 
 class Universe{
 public:
-    static PyInteger* PyTrue;
-    static PyInteger* PyFalse;
+    static PyObject* PyTrue;
+    static PyObject* PyFalse;
 
     static PyObject* PyNone;
 

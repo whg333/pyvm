@@ -25,8 +25,8 @@ private:
     int _length;
 
 public:
-    PyString(const char* c);
-    PyString(const char* c, const int length);
+    PyString(const char* c); // 自定义字面值时使用
+    PyString(const char* c, const int length); // 从字节码文件解析时使用
 
     const char* value(){
         return _value;

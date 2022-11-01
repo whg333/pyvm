@@ -7,6 +7,7 @@
 
 #include "pyObject.hpp"
 #include "code/codeObject.hpp"
+#include "util/map.hpp"
 
 class FunctionClass: public Klass{
 private:
@@ -22,6 +23,7 @@ private:
     CodeObject* _code;
     PyString* _name;
     unsigned int _flags;
+    Map<PyObject*, PyObject*>* _globals;
 public:
     FunctionObject(PyObject* code);
     FunctionObject(Klass* klass){
@@ -34,13 +36,18 @@ public:
     CodeObject* code(){
         return _code;
     }
-
     PyString* name(){
         return _name;
     }
-
     int flags(){
         return _flags;
+    }
+
+    Map<PyObject*, PyObject*>* globals(){
+        return _globals;
+    }
+    void setGlobals(Map<PyObject*, PyObject*>* globals){
+        _globals = globals;
     }
 };
 

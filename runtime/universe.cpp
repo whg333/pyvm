@@ -4,16 +4,16 @@
 
 #include "universe.hpp"
 
-PyInteger* Universe::PyTrue = nullptr;
-PyInteger* Universe::PyFalse = nullptr;
+PyObject* Universe::PyTrue = nullptr;
+PyObject* Universe::PyFalse = nullptr;
 
 PyObject* Universe::PyNone = nullptr;
 
 void Universe::genesis() {
-    PyTrue = new PyInteger(1);
-    PyFalse = new PyInteger(0);
+    PyTrue = new PyString("True");
+    PyFalse = new PyString("False");
 
-    PyNone = new PyObject();
+    PyNone = new PyString("None");
 }
 
 void Universe::destroy() {

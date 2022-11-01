@@ -36,19 +36,20 @@ public:
 
 class FrameObject {
 public:
-    FrameObject(CodeObject* codes);
-    FrameObject(FunctionObject* func);
+    FrameObject(CodeObject* codes); // 模块调用时使用
+    FrameObject(FunctionObject* func); // 函数调用时使用
     ~FrameObject();
 
     CodeObject* _codes;
     int _pc;
 
-    ArrayList<PyObject*>* _stack;
+    ArrayList<PyObject*>* _stack; // 操作数栈
     ArrayList<Block*>* _loopStack;
 
     ArrayList<PyObject*>* _consts;
     ArrayList<PyObject*>* _names;
-    Map<PyObject*, PyObject*>* _locals;
+    Map<PyObject*, PyObject*>* _locals; // 局部变量表
+    Map<PyObject*, PyObject*>* _globals; // 全局变量表
 
     FrameObject* _next;
 
@@ -74,12 +75,17 @@ public:
     Map<PyObject*, PyObject*>* locals(){
         return _locals;
     }
+    Map<PyObject*, PyObject*>* globals(){
+        return _globals;
+    }
+
     void setNext(FrameObject* next){
         _next = next;
     }
     FrameObject* next(){
         return _next;
     }
+    /** 是否是栈顶 */
     bool isTop(){
         return _next == nullptr;
     }
