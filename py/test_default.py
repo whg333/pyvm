@@ -1,6 +1,6 @@
-def foo(a=1):
-    return a
+def foo(a, b=2, c=4):
+    return a + b + c
 
 
-print foo()
+print foo(1)
 print foo(2)

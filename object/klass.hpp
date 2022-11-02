@@ -12,14 +12,26 @@ class PyString; // TODO 必须在这里声明，而不能include进来，导致�
 class Klass{
 private:
     PyString* _name;
+    Klass* _super;
 
 public:
     Klass(){
 
     }
 
-    void setName(PyString* name);
-    PyString* name();
+    void setName(PyString* name){
+        _name = name;
+    }
+    PyString* name(){
+        return _name;
+    }
+
+    void setSuper(Klass* super){
+        _super = super;
+    }
+    Klass* super(){
+        return _super;
+    }
 
     virtual void print(PyObject* self){
 

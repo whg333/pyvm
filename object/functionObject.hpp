@@ -9,6 +9,18 @@
 #include "code/codeObject.hpp"
 #include "util/map.hpp"
 
+PyObject* len(ObjList args);
+
+typedef PyObject* (*NativeFuncPointer)(ObjList args);
+
+class NativeFunctionClass:public Klass{
+private:
+    static NativeFunctionClass* instance;
+    NativeFunctionClass();
+public:
+    static NativeFunctionClass* getInst();
+};
+
 class FunctionClass: public Klass{
 private:
     static FunctionClass* instance;
@@ -25,7 +37,9 @@ private:
     unsigned int _flags;
     Map<PyObject*, PyObject*>* _globals;
     ObjList _defaults; // 函数调用参数默认值
+    NativeFuncPointer _nativeFunc; // Native函数指针
 public:
+    FunctionObject(NativeFuncPointer nfp);
     FunctionObject(PyObject* code);
     FunctionObject(Klass* klass){
         _code = nullptr;
@@ -33,6 +47,8 @@ public:
         _flags = 0;
         setClass(klass);
     }
+
+    PyObject* callNative(ObjList args);
 
     CodeObject* code(){
         return _code;

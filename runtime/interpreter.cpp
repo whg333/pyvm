@@ -20,10 +20,14 @@
 
 Interpreter::Interpreter() {
     Universe::genesis();
+
     _builtins = new Map<PyObject*, PyObject*>();
     _builtins->put(new PyString("True"), Universe::PyTrue);
     _builtins->put(new PyString("False"), Universe::PyFalse);
     _builtins->put(new PyString("None"), Universe::PyNone);
+
+    // 内建Native函数
+    _builtins->put(new PyString("len"), new FunctionObject(len));
 }
 
 void Interpreter::run(CodeObject *codeObj) {
@@ -179,6 +183,9 @@ void Interpreter::runFrame() {
             case ByteCode::LOAD_GLOBAL:
                 v = _frame->names()->get(opArg);
                 w = _frame->globals()->get(v);
+                if(w == Universe::PyNone){
+                    w = _builtins->get(v);
+                }
                 PUSH(w);
                 break;
 
@@ -225,9 +232,13 @@ void Interpreter::runFrame() {
 }
 
 void Interpreter::callFunc(PyObject* callable, ObjList args){
-    FrameObject* funcFrame = new FrameObject((FunctionObject*) callable, args);
-    funcFrame->setNext(_frame);
-    _frame = funcFrame;
+    if(callable->getClass() == NativeFunctionClass::getInst()){
+        PUSH(((FunctionObject*)callable)->callNative(args));
+    }else if(callable->getClass() == FunctionClass::getInst()){
+        FrameObject* funcFrame = new FrameObject((FunctionObject*) callable, args);
+        funcFrame->setNext(_frame);
+        _frame = funcFrame;
+    }
 }
 
 void Interpreter::leaveFrame() {
