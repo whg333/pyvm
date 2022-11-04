@@ -34,6 +34,8 @@ public:
     PyObject* not_equal(PyObject* other);
     PyObject* greater(PyObject* other);
     PyObject* ge(PyObject* other);
+
+    PyObject* getAttr(PyObject* attr);
 };
 
 #endif //PYVM_PY_OBJECT_HPP

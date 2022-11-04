@@ -27,7 +27,7 @@ public:
     T pop();
 };
 
-class PyObject;
+class PyObject; // 必须在这里声明，下面ArrayList<PyObject*>才能链接到PyObject
 typedef ArrayList<PyObject*>* ObjList;
 
 #endif //PYVM_ARRAY_LIST_HPP

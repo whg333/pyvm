@@ -25,6 +25,7 @@ public:
     static const unsigned char LOAD_CONST = 100;
     static const unsigned char LOAD_NAME = 101;
 
+    static const unsigned char LOAD_ATTR = 106; /* Index in name list */
     static const unsigned char COMPARE_OP = 107; // 比较操作符
     enum COMPARE{
         LESS = 0,

@@ -3,6 +3,8 @@
 //
 
 #include "pyObject.hpp"
+#include "functionObject.hpp"
+#include "runtime/universe.hpp"
 
 void PyObject::print() {
     getClass()->print(this);
@@ -34,4 +36,17 @@ PyObject *PyObject::greater(PyObject *other) {
 
 PyObject *PyObject::ge(PyObject *other) {
     return getClass()->ge(this, other);
+}
+
+PyObject *PyObject::getAttr(PyObject *attr) {
+    PyObject* result = getClass()->attrMap()->get(attr);
+    if(result == Universe::PyNone){
+        return result;
+    }
+
+    // 从attrMap里面获取到的如果是一个FunctionObject，则包装成MethodObject把this当成隐含参数传递进去
+    if(MethodObject::isFunction(result)){
+        result = new MethodObject((FunctionObject*)result, this);
+    }
+    return result;
 }

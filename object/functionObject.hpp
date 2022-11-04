@@ -9,7 +9,9 @@
 #include "code/codeObject.hpp"
 #include "util/map.hpp"
 
+// 下面是函数声明，方可以正常链接到
 PyObject* len(ObjList args);
+PyObject* upper(ObjList args);
 
 typedef PyObject* (*NativeFuncPointer)(ObjList args);
 
@@ -73,5 +75,37 @@ public:
     void setDefaults(ObjList defaults);
 };
 
+class MethodClass: public Klass{
+private:
+    static MethodClass* instance;
+    MethodClass();
+public:
+    static MethodClass* getInst();
+};
+
+class MethodObject: public PyObject{
+private:
+    FunctionObject* _func;
+    PyObject* _owner;
+public:
+    MethodObject(FunctionObject* func): _func(func), _owner(nullptr){
+        setClass(MethodClass::getInst());
+    }
+    MethodObject(FunctionObject* func, PyObject* owner): _func(func), _owner(owner){
+        setClass(MethodClass::getInst());
+    }
+
+    FunctionObject* func(){
+        return _func;
+    }
+    void setOwner(PyObject* owner){
+        _owner = owner;
+    }
+    PyObject* owner(){
+        return _owner;
+    }
+
+    static bool isFunction(PyObject* obj);
+};
 
 #endif //PYVM_FUNCTIONOBJECT_HPP

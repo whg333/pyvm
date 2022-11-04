@@ -42,4 +42,7 @@ public:
     };
 };
 
+class PyObject;
+typedef Map<PyObject*, PyObject*> ObjMap;
+
 #endif //PYVM_MAP_HPP

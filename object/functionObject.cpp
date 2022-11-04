@@ -4,6 +4,7 @@
 
 #include "functionObject.hpp"
 #include "pyInteger.hpp"
+#include "runtime/universe.hpp"
 
 NativeFunctionClass* NativeFunctionClass::instance = nullptr;
 NativeFunctionClass *NativeFunctionClass::getInst() {
@@ -14,6 +15,38 @@ NativeFunctionClass *NativeFunctionClass::getInst() {
 }
 NativeFunctionClass::NativeFunctionClass() {
     setSuper(FunctionClass::getInst());
+}
+
+PyObject* len(ObjList args){
+    PyObject* arg0 = args->get(0);
+    assert(arg0->getClass() == StringClass::getInst());
+    PyString* str = (PyString*)arg0;
+    return new PyInteger(str->length());
+}
+
+PyObject* upper(ObjList args){
+    PyObject* arg0 = args->get(0);
+    assert(arg0->getClass() == StringClass::getInst());
+    PyString* str = (PyString*)arg0;
+    int len = str->length();
+    if(len <= 0){
+        return Universe::PyNone;
+    }
+
+    char* v = new char[len];
+    char c;
+    for(int i=0;i<len;i++){
+        c = str->value()[i];
+        if(c >= 'a' && c <= 'z'){
+            v[i] = c - 32;
+        }else{
+            v[i] = c;
+        }
+    }
+
+    PyString* upper = new PyString(v);
+    delete[] v;
+    return upper;
 }
 
 FunctionClass* FunctionClass::instance = nullptr;
@@ -44,16 +77,6 @@ FunctionObject::FunctionObject(NativeFuncPointer nfp) {
     setClass(NativeFunctionClass::getInst());
 }
 
-PyObject *FunctionObject::callNative(ObjList args) {
-    return (* _nativeFunc)(args); // 调用函数指针
-}
-
-PyObject* len(ObjList args){
-    PyObject* arg0 = args->get(0);
-    assert(arg0->getClass() == StringClass::getInst());
-    return new PyInteger(((PyString*)arg0)->length());
-}
-
 FunctionObject::FunctionObject(PyObject* codeObj) {
     CodeObject* code = (CodeObject*)codeObj;
     _code = code;
@@ -61,6 +84,10 @@ FunctionObject::FunctionObject(PyObject* codeObj) {
     _flags = code->_flag;
     _globals = nullptr;
     setClass(FunctionClass::getInst());
+}
+
+PyObject *FunctionObject::callNative(ObjList args) {
+    return (* _nativeFunc)(args); // 调用函数指针
 }
 
 void FunctionObject::setDefaults(ObjList defaults) {
@@ -73,4 +100,29 @@ void FunctionObject::setDefaults(ObjList defaults) {
     for(int i=0;i<defaults->length();i++){
         _defaults->set(i, defaults->get(i));
     }
+}
+
+MethodClass* MethodClass::instance = nullptr;
+MethodClass *MethodClass::getInst() {
+    if(instance == nullptr){
+        instance = new MethodClass();
+    }
+    return instance;
+}
+MethodClass::MethodClass() {
+    setAttrMap(new ObjMap());
+}
+
+bool MethodObject::isFunction(PyObject *obj) {
+    Klass* cls = obj->getClass();
+    if(cls == FunctionClass::getInst()){
+        return true;
+    }
+    cls = cls->super();
+    while(cls != nullptr){
+        if(cls == FunctionClass::getInst()){
+            return true;
+        }
+    }
+    return false;
 }

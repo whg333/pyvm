@@ -42,6 +42,7 @@ void Interpreter::runFrame() {
     ObjList args = nullptr;
     FunctionObject* fo;
     while(_frame->hasMoreCodes()){
+        int beforePc = _frame->pc();
         unsigned char opCode = _frame->getOpCode();
         bool hasArg = (opCode & 0xFF) >= ByteCode::HAS_ARGUMENT;
         int opArg = -1;
@@ -49,6 +50,7 @@ void Interpreter::runFrame() {
             opArg = _frame->getOpArg();
         }
 
+        // printf("%3d %d\n", beforePc, opCode);
         switch (opCode) {
             case ByteCode::POP_TOP:
                 POP();
@@ -225,6 +227,12 @@ void Interpreter::runFrame() {
                 }
                 break;
 
+            case ByteCode::LOAD_ATTR:
+                v = POP();
+                w = _frame->names()->get(opArg);
+                PUSH(v->getAttr(w));
+                break;
+
             default:
                 printf("Error: Unknown op code %d\n", opCode);
         }
@@ -233,9 +241,18 @@ void Interpreter::runFrame() {
 
 void Interpreter::callFunc(PyObject* callable, ObjList args){
     if(callable->getClass() == NativeFunctionClass::getInst()){
-        PUSH(((FunctionObject*)callable)->callNative(args));
+        FunctionObject* function = (FunctionObject*)callable;
+        PUSH(function->callNative(args));
+    }else if(callable->getClass() == MethodClass::getInst()){
+        MethodObject* method = (MethodObject*)callable;
+        if(!args){
+            args = new ArrayList<PyObject*>(1);
+        }
+        args->insert(0, method->owner());
+        callFunc(method->func(), args);
     }else if(callable->getClass() == FunctionClass::getInst()){
-        FrameObject* funcFrame = new FrameObject((FunctionObject*) callable, args);
+        FunctionObject* function = (FunctionObject*)callable;
+        FrameObject* funcFrame = new FrameObject(function, args);
         funcFrame->setNext(_frame);
         _frame = funcFrame;
     }
