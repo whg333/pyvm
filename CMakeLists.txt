@@ -12,6 +12,7 @@ add_executable(pyvm main.cpp
         util/map.cpp
         code/binaryFileParser.cpp
         code/codeObject.cpp
+        code/bytecode.cpp
         runtime/interpreter.cpp
         runtime/universe.cpp
         runtime/frameObject.cpp)

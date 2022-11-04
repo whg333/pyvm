@@ -20,6 +20,8 @@
 
 Interpreter::Interpreter() {
     Universe::genesis();
+    ByteCode::initMap();
+    _log = true;
 
     _builtins = new Map<PyObject*, PyObject*>();
     _builtins->put(new PyString("True"), Universe::PyTrue);
@@ -44,13 +46,29 @@ void Interpreter::runFrame() {
     while(_frame->hasMoreCodes()){
         int beforePc = _frame->pc();
         unsigned char opCode = _frame->getOpCode();
+        if(_log){
+            printf("\n->%3d ", beforePc);
+            map<unsigned char, string>::iterator it = ByteCode::byteCodeMap.find(opCode);
+            if(it != ByteCode::byteCodeMap.end()){
+                printf("%-20s", it->second.c_str());
+            }else{
+                printf("%-20d", opCode);
+            }
+        }
+
         bool hasArg = (opCode & 0xFF) >= ByteCode::HAS_ARGUMENT;
         int opArg = -1;
         if(hasArg){
             opArg = _frame->getOpArg();
         }
+        if(_log){
+            if(hasArg){
+                printf("\t%d\n", opArg);
+            }else{
+                printf("\n");
+            }
+        }
 
-        // printf("%3d %d\n", beforePc, opCode);
         switch (opCode) {
             case ByteCode::POP_TOP:
                 POP();

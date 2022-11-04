@@ -5,6 +5,9 @@
 #ifndef PYVM_BYTECODE_HPP
 #define PYVM_BYTECODE_HPP
 
+#include <map>
+using namespace std;
+
 class ByteCode{
 public:
     static const unsigned char POP_TOP = 1;
@@ -52,6 +55,9 @@ public:
 
     static const unsigned char CALL_FUNCTION = 131;
     static const unsigned char MAKE_FUNCTION = 132;
+
+    static map<unsigned char, string> byteCodeMap;
+    static void initMap();
 };
 
 #endif //PYVM_BYTECODE_HPP
