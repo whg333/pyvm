@@ -8,6 +8,7 @@
 #include "object/pyInteger.hpp"
 #include "runtime/universe.hpp"
 #include "object/functionObject.hpp"
+#include "object/pyList.hpp"
 
 #define PUSH(x) _frame->stack()->add((x))
 #define POP()   _frame->stack()->pop()
@@ -249,6 +250,14 @@ void Interpreter::runFrame() {
                 v = POP();
                 w = _frame->names()->get(opArg);
                 PUSH(v->getAttr(w));
+                break;
+
+            case ByteCode::BUILD_LIST:
+                v = new PyList();
+                while(opArg--){
+                    ((PyList*)v)->set(opArg, POP());
+                }
+                PUSH(v);
                 break;
 
             default:

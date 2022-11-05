@@ -19,6 +19,7 @@ const unsigned char ByteCode::STORE_GLOBAL;
 
 const unsigned char ByteCode::LOAD_CONST;
 const unsigned char ByteCode::LOAD_NAME;
+const unsigned char ByteCode::BUILD_LIST;
 
 const unsigned char ByteCode::LOAD_ATTR;
 const unsigned char ByteCode::COMPARE_OP;
@@ -49,6 +50,7 @@ void ByteCode::initMap() {
             make_pair(ByteCode::STORE_GLOBAL, "STORE_GLOBAL"),
             make_pair(ByteCode::LOAD_CONST, "LOAD_CONST"),
             make_pair(ByteCode::LOAD_NAME, "LOAD_NAME"),
+            make_pair(ByteCode::BUILD_LIST, "BUILD_LIST"),
             make_pair(ByteCode::LOAD_ATTR, "LOAD_ATTR"),
             make_pair(ByteCode::COMPARE_OP, "COMPARE_OP"),
             make_pair(ByteCode::JUMP_FORWARD, "JUMP_FORWARD"),

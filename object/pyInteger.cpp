@@ -27,7 +27,7 @@ PyInteger::PyInteger(int i) {
 
 void IntegerClass::print(PyObject *self) {
     PyInteger* selfInt = (PyInteger*)self;
-    assert(selfInt && (selfInt->getClass() == (Klass*)this));
+    assert(selfInt && (selfInt->getClass() == this));
     printf("%d", selfInt->value());
 }
 

@@ -54,7 +54,10 @@ T ArrayList<T>::get(int index) {
 
 template<typename T>
 void ArrayList<T>::set(int index, T t) {
-    // check index in size
+    if (_size <= index)
+        _size = index + 1;
+    while (_size > _length)
+        expand();
     _array[index] = t;
 }
 

@@ -33,7 +33,7 @@ PyString::PyString(const char* c, const int length) {
 
 void StringClass::print(PyObject *self) {
     PyString* selfStr = (PyString*)self;
-    assert(selfStr && (selfStr->getClass() == (Klass*)this));
+    assert(selfStr && (selfStr->getClass() == this));
     for(int i=0;i<selfStr->length();i++){
         printf("%c", selfStr->value()[i]);
     }
