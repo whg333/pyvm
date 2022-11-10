@@ -50,3 +50,7 @@ PyObject *PyObject::getAttr(PyObject *attr) {
     }
     return result;
 }
+
+PyObject *PyObject::subscr(PyObject *index) {
+    return getClass()->subscr(this, index);
+}

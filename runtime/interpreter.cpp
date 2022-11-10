@@ -22,7 +22,7 @@
 Interpreter::Interpreter() {
     Universe::genesis();
     ByteCode::initMap();
-    _log = true;
+    _log = false;
 
     _builtins = new Map<PyObject*, PyObject*>();
     _builtins->put(new PyString("True"), Universe::PyTrue);
@@ -259,6 +259,11 @@ void Interpreter::runFrame() {
                 }
                 PUSH(v);
                 break;
+            case ByteCode::BINARY_SUBSCR:
+                v = POP();
+                w = POP();
+                PUSH(w->subscr(v));
+                break;
 
             default:
                 printf("Error: Unknown op code %d\n", opCode);
@@ -269,7 +274,7 @@ void Interpreter::runFrame() {
 void Interpreter::callFunc(PyObject* callable, ObjList args){
     if(callable->getClass() == NativeFunctionClass::getInst()){
         FunctionObject* function = (FunctionObject*)callable;
-        PUSH(function->callNative(args));
+        PUSH(function->callNative(args)); // 调用Native函数后推入栈顶
     }else if(callable->getClass() == MethodClass::getInst()){
         MethodObject* method = (MethodObject*)callable;
         if(!args){

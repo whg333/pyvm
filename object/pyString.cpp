@@ -58,3 +58,11 @@ PyObject *StringClass::equal(PyObject *self, PyObject *other) {
     }
     return Universe::PyTrue;
 }
+
+PyObject *StringClass::subscr(PyObject *self, PyObject *index) {
+    PyString* selfStr = (PyString*)self;
+    PyInteger* indexInt = (PyInteger*)index;
+    assert(selfStr && (selfStr->getClass() == (Klass*)this));
+    assert(indexInt && (indexInt->getClass() == IntegerClass::getInst()));
+    return new PyString(&(selfStr->value()[indexInt->value()]), 1);
+}

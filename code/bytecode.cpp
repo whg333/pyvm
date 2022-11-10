@@ -6,6 +6,7 @@
 
 const unsigned char ByteCode::POP_TOP;
 const unsigned char ByteCode::BINARY_ADD;
+const unsigned char ByteCode::BINARY_SUBSCR;
 
 const unsigned char ByteCode::PRINT_ITEM;
 const unsigned char ByteCode::PRINT_NEWLINE;
@@ -41,6 +42,7 @@ void ByteCode::initMap() {
     pair<unsigned char, string> pairArray[] = {
             make_pair(ByteCode::POP_TOP, "POP_TOP"),
             make_pair(ByteCode::BINARY_ADD, "BINARY_ADD"),
+            make_pair(ByteCode::BINARY_SUBSCR, "BINARY_SUBSCR"),
             make_pair(ByteCode::PRINT_ITEM, "PRINT_ITEM"),
             make_pair(ByteCode::PRINT_NEWLINE, "PRINT_NEWLINE"),
             make_pair(ByteCode::BREAK_LOOP, "BREAK_LOOP"),

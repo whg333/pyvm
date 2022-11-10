@@ -69,6 +69,10 @@ public:
     virtual PyObject* ge(PyObject* self, PyObject* other){
         return nullptr;
     }
+
+    virtual PyObject* subscr(PyObject* self, PyObject* index){
+        return nullptr;
+    }
 };
 
 #endif //PYVM_KLASS_HPP

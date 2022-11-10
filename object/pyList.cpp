@@ -3,6 +3,7 @@
 //
 
 #include "pyList.hpp"
+#include "pyInteger.hpp"
 
 ListClass* ListClass::instance = nullptr;
 ListClass *ListClass::getInst() {
@@ -28,6 +29,14 @@ void ListClass::print(PyObject *self) {
         selfList->get(i)->print();
     }
     printf("]");
+}
+
+PyObject *ListClass::subscr(PyObject *self, PyObject *index) {
+    PyList* selfList = (PyList*)self;
+    PyInteger* indexInt = (PyInteger*)index;
+    assert(selfList && (selfList->getClass() == this));
+    assert(indexInt && (indexInt->getClass() == IntegerClass::getInst()));
+    return selfList->get(indexInt->value());
 }
 
 PyList::PyList() {

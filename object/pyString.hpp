@@ -17,6 +17,7 @@ public:
     static StringClass* getInst();
     void print(PyObject *self) override;
     PyObject * equal(PyObject *self, PyObject *other) override;
+    PyObject * subscr(PyObject *self, PyObject *index) override;
 };
 
 class PyString:public PyObject{

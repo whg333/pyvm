@@ -36,6 +36,8 @@ public:
     PyObject* ge(PyObject* other);
 
     PyObject* getAttr(PyObject* attr);
+
+    PyObject* subscr(PyObject* index);
 };
 
 #endif //PYVM_PY_OBJECT_HPP
