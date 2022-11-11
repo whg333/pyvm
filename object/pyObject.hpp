@@ -38,6 +38,7 @@ public:
     PyObject* getAttr(PyObject* attr);
 
     PyObject* subscr(PyObject* index);
+    PyObject* contains(PyObject* element);
 };
 
 #endif //PYVM_PY_OBJECT_HPP

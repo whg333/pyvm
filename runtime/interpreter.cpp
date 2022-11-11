@@ -117,6 +117,17 @@ void Interpreter::runFrame() {
                         PUSH(v->ge(w));
                         break;
 
+                    case ByteCode::IN:
+                        PUSH(w->contains(v));
+                        break;
+                    case ByteCode::NOT_IN:
+                        if(w->contains(v) == Universe::PyTrue){
+                            PUSH(Universe::PyFalse);
+                        }else{
+                            PUSH(Universe::PyTrue);
+                        }
+                        break;
+
                     case ByteCode::IS:
                         if(v == w){
                             PUSH(Universe::PyTrue);

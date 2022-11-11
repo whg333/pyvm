@@ -16,6 +16,7 @@ public:
     static ListClass* getInst();
     void print(PyObject *self) override;
     PyObject * subscr(PyObject *self, PyObject *index) override;
+    PyObject * contains(PyObject *self, PyObject *element) override;
 };
 
 class PyList: public PyObject{

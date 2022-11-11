@@ -66,3 +66,9 @@ PyObject *StringClass::subscr(PyObject *self, PyObject *index) {
     assert(indexInt && (indexInt->getClass() == IntegerClass::getInst()));
     return new PyString(&(selfStr->value()[indexInt->value()]), 1);
 }
+
+PyObject *StringClass::contains(PyObject *self, PyObject *element) {
+    PyString* selfStr = (PyString*)self;
+    assert(selfStr && (selfStr->getClass() == (Klass*)this));
+    return Universe::PyTrue; // TODO 逐个字符去判断
+}

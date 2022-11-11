@@ -73,6 +73,9 @@ public:
     virtual PyObject* subscr(PyObject* self, PyObject* index){
         return nullptr;
     }
+    virtual PyObject* contains(PyObject* self, PyObject* element){
+        return nullptr;
+    }
 };
 
 #endif //PYVM_KLASS_HPP

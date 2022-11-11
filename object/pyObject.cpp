@@ -54,3 +54,7 @@ PyObject *PyObject::getAttr(PyObject *attr) {
 PyObject *PyObject::subscr(PyObject *index) {
     return getClass()->subscr(this, index);
 }
+
+PyObject *PyObject::contains(PyObject *element) {
+    return getClass()->contains(this, element);
+}

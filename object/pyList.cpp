@@ -4,6 +4,7 @@
 
 #include "pyList.hpp"
 #include "pyInteger.hpp"
+#include "runtime/universe.hpp"
 
 ListClass* ListClass::instance = nullptr;
 ListClass *ListClass::getInst() {
@@ -37,6 +38,18 @@ PyObject *ListClass::subscr(PyObject *self, PyObject *index) {
     assert(selfList && (selfList->getClass() == this));
     assert(indexInt && (indexInt->getClass() == IntegerClass::getInst()));
     return selfList->get(indexInt->value());
+}
+
+PyObject *ListClass::contains(PyObject *self, PyObject *element) {
+    PyList* selfList = (PyList*)self;
+    assert(selfList && (selfList->getClass() == this));
+    int size = selfList->size();
+    for(int i=0;i<size;i++){
+        if(selfList->get(i)->equal(element)){
+            return Universe::PyTrue;
+        }
+    }
+    return Universe::PyFalse;
 }
 
 PyList::PyList() {
